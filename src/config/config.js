@@ -1,11 +1,11 @@
 export const config = {
-  useMockData: true, // Nota: cambiar a false cuando backend esté listo
+  useMockData: import.meta.env.VITE_USE_MOCK === "true",
 
-  api: "https://api.example.com",
+  api: import.meta.env.VITE_API_URL || "",
 
   routes: {
-    products: "/products",
-    orders: "/orders"
+    products: import.meta.env.VITE_ROUTE_PRODUCTS,
+    orders: import.meta.env.VITE_ROUTE_ORDERS
   }
 
 }

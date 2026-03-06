@@ -1,19 +1,47 @@
-export function showToast(message){
+export function showToast(message, status) {
 
-    const toast = document.createElement("div")
+    const colors = {
+        success: "bg-success",
+        error: "bg-danger",
+        warning: "bg-warning text-dark"
+    }
 
-    toast.className = "toast-notification"
+    const toastHTML = `
+        <div class="toast align-items-center text-white ${colors[status] || "bg-secondary"} border-0"
+             role="alert"
+             aria-live="assertive"
+             aria-atomic="true">
 
-    toast.innerText = message
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
 
-    document.body.appendChild(toast)
+                <button 
+                    type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast">
+                </button>
+            </div>
 
-    setTimeout(()=>{
-        toast.classList.add("show")
-    },50)
+        </div>
+    `
 
-    setTimeout(()=>{
-        toast.remove()
-    },3000)
+    const container = document.getElementById("toast-container")
 
+    const wrapper = document.createElement("div")
+    wrapper.innerHTML = toastHTML
+
+    const toastElement = wrapper.firstElementChild
+    container.appendChild(toastElement)
+
+    const toast = new bootstrap.Toast(toastElement, {
+        delay: 3000
+    })
+
+    toast.show()
+
+    toastElement.addEventListener("hidden.bs.toast", () => {
+        toastElement.remove()
+    })
 }
