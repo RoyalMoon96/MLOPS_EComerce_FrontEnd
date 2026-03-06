@@ -76,7 +76,7 @@ export async function cartPage(app) {
             })
             .filter(Boolean)
 
-        console.log(cartWithProducts)
+        //console.log(cartWithProducts)
 
         app.innerHTML = `
             <div class="container mt-4">
@@ -173,12 +173,7 @@ export async function cartPage(app) {
             0
         )
 
-        const confirmed = confirm(`Confirm order of $${total.toFixed(2)} ?`)
-
-        if (!confirmed) {
-            alert("Order Cancelled.")
-            return
-        }
+        showOrderModal(cartWithProducts, total)
 
         // Crear resumen tipo recibo
         const orderItems = cartWithProducts.map(item => ({
@@ -218,26 +213,100 @@ export async function cartPage(app) {
             }
         */
 
-        try {
+    }
 
-            const orderResponse = await createOrder(orderData)
+    function showOrderModal(cartWithProducts, total) {
 
-            console.log("Order created:", orderResponse)
+        const modalHTML = `
+        <div class="modal fade" id="orderModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
 
-        } catch (error) {
+                    <div class="modal-header">
+                        <h5 class="modal-title">Order Summary</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
 
-            console.error("Order error:", error)
-            alert("Error creating order")
-            return
+                    <div class="modal-body">
 
+                        <ul class="list-group mb-3">
+                            ${cartWithProducts.map(item => `
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <div>
+                                        <strong>${item.name}</strong><br>
+                                        x${item.quantity}
+                                    </div>
+                                    <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                                </li>
+                            `).join("")}
+                        </ul>
+
+                        <h5 class="text-end">Total: $${total.toFixed(2)}</h5>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button class="btn btn-success" id="confirm-order-btn">
+                            Confirm Order
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        `
+
+        document.body.insertAdjacentHTML("beforeend", modalHTML)
+
+        const modalElement = document.getElementById("orderModal")
+        const modal = new bootstrap.Modal(modalElement)
+
+        modal.show()
+
+        document.getElementById("confirm-order-btn").onclick = async () => {
+
+            const orderItems = cartWithProducts.map(item => ({
+                productId: item.id,
+                name: item.name,
+                quantitySold: item.quantity,
+                unitPrice: item.price,
+                subtotal: item.price * item.quantity
+            }))
+
+            const orderData = {
+                items: orderItems,
+                totalAmount: total,
+                createdAt: new Date().toISOString()
+            }
+
+            try {
+
+                const orderResponse = await createOrder(orderData)
+
+                console.log("Order created:", orderResponse)
+
+            } catch (error) {
+
+                console.error("Order error:", error)
+                alert("Error creating order")
+                return
+            }
+
+            modal.hide()
+
+            clearCart()
+            updateCartBadge()
+            render()
+
+            alert("Order Approved! Payment Successful.")
         }
 
-        console.log("Order summary:", orderData)
-
-        alert("Order Approved! Payment Successful.")
-
-        clearCart()
-        updateCartBadge()
-        await render()
+        modalElement.addEventListener("hidden.bs.modal", () => {
+            modalElement.remove()
+        })
     }
 }
