@@ -1,3 +1,5 @@
+import { getProducts } from "../services/api.js"
+
 export function addToCart(product) {
 
     const cart = JSON.parse(localStorage.getItem("cart")) || []
@@ -17,10 +19,6 @@ export function addToCart(product) {
 
         cart.push({
             id: product.id,
-            title: product.name,
-            price: product.price,
-            image: product.image,
-            stock: product.stock,
             quantity: 1
         })
     }
@@ -57,11 +55,6 @@ export function increaseQuantity(id) {
 
     if (!product) return
 
-    if (product.quantity >= product.stock) {
-        alert("Stock limit reached.")
-        return
-    }
-
     product.quantity += 1
     saveCart(cart)
 }
@@ -85,25 +78,23 @@ export function clearCart() {
     localStorage.removeItem("cart")
 }
 
-export function getTotalPrice() {
-    const cart = getCart()
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0)
-}
 
-export function reduceStockAfterPurchase(cart) {
+//SIMULA BAJAR STOCK
 
-    const products = JSON.parse(localStorage.getItem("products")) || []
+// export function reduceStockAfterPurchase(cart) {
 
-    cart.forEach(item => {
+//     const products = JSON.parse(localStorage.getItem("products")) || []
 
-        const product = products.find(p => p.id == item.id)
+//     cart.forEach(item => {
 
-        if (product) {
-            product.stock -= item.quantity
-        }
+//         const product = products.find(p => p.id == item.id)
 
-    })
+//         if (product) {
+//             product.stock -= item.quantity
+//         }
 
-    localStorage.setItem("products", JSON.stringify(products))
+//     })
 
-}
+//     localStorage.setItem("products", JSON.stringify(products))
+
+// }

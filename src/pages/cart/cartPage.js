@@ -3,23 +3,24 @@ import {
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
-    getTotalPrice,
     clearCart
 } from "../../services/cartService.js"
 
-import { reduceStockAfterPurchase } from "../../services/cartService.js"
-
 import { updateCartBadge } from "../../utils/updateCartBadge.js"
 
-export function cartPage(app) {
+import { createOrder, getProducts } from "../../services/api.js"
 
-    render()
+let productsCache = []
+
+export async function cartPage(app) {
+
+    await render()
 
     app.onclick = null
 
     app.onclick = (event) => {
 
-        const id = event.target.dataset.id
+        const id = Number(event.target.dataset.id)
 
         if (event.target.classList.contains("increase-btn")) {
             increaseQuantity(id)
@@ -48,9 +49,34 @@ export function cartPage(app) {
         }
     }
 
-    function render() {
+
+    async function render() {
 
         const cart = getCart()
+        if (productsCache.length === 0) {
+            productsCache = await getProducts()
+            console.log("http request")
+        }
+
+        const products = productsCache
+        //console.log(products)
+
+        const cartWithProducts = cart
+            .map(item => {
+
+                const product = products.find(p => p.id == item.id)
+
+                if (!product) return null
+
+                return {
+                    ...product,
+                    quantity: item.quantity
+                }
+
+            })
+            .filter(Boolean)
+
+        console.log(cartWithProducts)
 
         app.innerHTML = `
             <div class="container mt-4">
@@ -61,19 +87,24 @@ export function cartPage(app) {
 
         const container = document.getElementById("cart-content")
 
-        if (cart.length === 0) {
+        const total = cartWithProducts.reduce(
+            (sum, p) => sum + p.price * p.quantity,
+            0
+        )
+
+        if (cartWithProducts.length === 0) {
             container.innerHTML = `<p>Your cart is empty.</p>`
             return
         }
 
         container.innerHTML = `
             <div class="row">
-                ${cart.map(product => `
+                ${cartWithProducts.map(product => `
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <img src="${product.image}" class="card-img-top" />
                             <div class="card-body">
-                                <h5>${product.title}</h5>
+                                <h5>${product.name}</h5>
                                 <p>$${product.price}</p>
 
                                 <div class="d-flex align-items-center gap-2 mb-2">
@@ -93,7 +124,7 @@ export function cartPage(app) {
 
             <hr>
 
-            <h4>Total: $${getTotalPrice().toFixed(2)}</h4>
+            <h4>Total: $${total.toFixed(2)}</h4>
 
             <button class="btn btn-success mt-3" id="checkout-btn">
                 Generate Order & Pay
@@ -101,21 +132,46 @@ export function cartPage(app) {
         `
     }
 
-    function handleCheckout() {
+    async function handleCheckout() {
 
         const cart = getCart()
+        if (productsCache.length === 0) {
+            productsCache = await getProducts()
+            console.log("http request")
+        }
 
-        if (cart.length === 0) return
+        const products = productsCache
 
+        const cartWithProducts = cart
+            .map(item => {
+
+                const product = products.find(p => p.id == item.id)
+
+                if (!product) return null
+
+                return {
+                    ...product,
+                    quantity: item.quantity
+                }
+
+            })
+            .filter(Boolean)
+
+        if (cartWithProducts.length === 0) return
         
-        const insufficientStock = cart.find(item => item.quantity > item.stock)
+        const insufficientStock = cartWithProducts.find(
+            item => item.quantity > item.stock
+        )
 
         if (insufficientStock) {
             alert(`Not enough stock for ${insufficientStock.title}`)
             return
         }
 
-        const total = getTotalPrice()
+        const total = cartWithProducts.reduce(
+            (sum, p) => sum + p.price * p.quantity,
+            0
+        )
 
         const confirmed = confirm(`Confirm order of $${total.toFixed(2)} ?`)
 
@@ -125,9 +181,9 @@ export function cartPage(app) {
         }
 
         // Crear resumen tipo recibo
-        const orderItems = cart.map(item => ({
+        const orderItems = cartWithProducts.map(item => ({
             productId: item.id,
-            title: item.title,
+            name: item.name,
             quantitySold: item.quantity,
             unitPrice: item.price,
             subtotal: item.price * item.quantity
@@ -140,7 +196,7 @@ export function cartPage(app) {
         }
 
         // Reducir stock después de la compra
-        reduceStockAfterPurchase(cart)
+        // reduceStockAfterPurchase(cart)
 
         // QUÍ SE LLAMARÍA A LA FUNCIÓN DE ÓRDENES
         /*
@@ -162,12 +218,26 @@ export function cartPage(app) {
             }
         */
 
+        try {
+
+            const orderResponse = await createOrder(orderData)
+
+            console.log("Order created:", orderResponse)
+
+        } catch (error) {
+
+            console.error("Order error:", error)
+            alert("Error creating order")
+            return
+
+        }
+
         console.log("Order summary:", orderData)
 
         alert("Order Approved! Payment Successful.")
 
         clearCart()
         updateCartBadge()
-        render()
+        await render()
     }
 }
