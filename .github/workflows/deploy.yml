@@ -23,6 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create env file
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.production
+          echo "VITE_USE_MOCK=${{ secrets.VITE_USE_MOCK }}" >> .env.production
+          echo "VITE_ROUTE_PRODUCTS=${{ secrets.VITE_ROUTE_PRODUCTS }}" >> .env.production
+          echo "VITE_ROUTE_ORDERS=${{ secrets.VITE_ROUTE_ORDERS }}" >> .env.production
+          
       - name: Build project
         run: npm run build
 
