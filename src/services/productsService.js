@@ -1,7 +1,22 @@
 import { getProducts, getProductById } from "./api.js"
 
-export async function fetchProducts() {
-    return getProducts()
+export async function fetchProducts(params = {}) {
+
+  const result = await getProducts()
+
+  if (!Array.isArray(result)) {
+    return result
+  }
+
+  const page  = Number(params.page)  || 1
+  const limit = Number(params.limit) || 50
+
+  const start    = (page - 1) * limit
+  const end      = start + limit
+  const products = result.slice(start, end)
+  const total    = result.length
+
+  return { products, total }
 }
 
 export async function fetchProductById(id) {
