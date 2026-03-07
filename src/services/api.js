@@ -42,10 +42,46 @@ export async function getProductById(id) {
 
 // ORDERS
 
+const statusFlow = [
+  "PROCESSING",
+  "CONFIRMED",
+  "SHIPPED",
+  "DELIVERED"
+]
+
+function progressOrderStatus(order) {
+
+  const currentIndex = statusFlow.indexOf(order.status)
+
+  if (currentIndex < statusFlow.length - 1) {
+    order.status = statusFlow[currentIndex + 1]
+  }
+
+}
+
 export async function createOrder(data) {
 
   if (config.useMockData) {
-    return { id: Date.now(), status: "CONFIRMED" }
+
+    const formattedItems = data.items.map(item => ({
+      productId: item.productId,
+      name: item.name,
+      quantity: item.quantitySold,
+      price: item.unitPrice,
+      subtotal: item.subtotal
+    }))
+
+    const newOrder = {
+      id: Date.now(),
+      date: new Date().toISOString().split("T")[0],
+      status: "CONFIRMED",
+      total: data.totalAmount,
+      items: formattedItems
+    }
+
+    ordersMock.unshift(newOrder)
+
+    return newOrder
   }
 
   const response = await fetch(
@@ -66,4 +102,75 @@ export async function createOrder(data) {
   return response.json()
 }
 
+// GET ORDERS
 
+let ordersMock = [
+  {
+    id: 1001,
+    date: "2026-03-01",
+    total: 105,
+    status: "DELIVERED",
+    items: [
+      {
+        productId: 1,
+        name: "Mechanical Keyboard",
+        quantity: 1,
+        price: 80,
+        subtotal: 80
+      },
+      {
+        productId: 2,
+        name: "Wireless Mouse",
+        quantity: 1,
+        price: 25,
+        subtotal: 25
+      }
+    ]
+  },
+  {
+    id: 1002,
+    date: "2026-03-02",
+    total: 200,
+    status: "SHIPPED",
+    items: [
+      {
+        productId: 3,
+        name: "Running Shoes",
+        quantity: 2,
+        price: 100,
+        subtotal: 200
+      }
+    ]
+  }
+]
+
+export async function getOrders() {
+
+  if (config.useMockData) {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(ordersMock), 300)
+    })
+  }
+
+  return fetchData(config.routes.orders)
+}
+
+
+export async function getOrderById(id) {
+
+  if (config.useMockData) {
+
+    const order = ordersMock.find(o => o.id == id)
+
+    if (!order) return null
+
+    // randomly progress order status
+    if (Math.random() > 0.6) {
+      progressOrderStatus(order)
+    }
+
+    return order
+  }
+
+  return fetchData(`${config.routes.orders}/${id}`)
+}
