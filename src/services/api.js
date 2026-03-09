@@ -25,7 +25,9 @@ export async function getProducts() {
     })
   }
 
-  return fetchData(config.routes.products)
+  const data = await fetchData(config.routes.products)
+
+  return data.items
 }
 
 
