@@ -30,7 +30,7 @@ export async function cartPage(app) {
 
     app.onclick = (event) => {
 
-        const id = Number(event.target.dataset.id)
+        const id = event.target.dataset.id
 
         if (event.target.classList.contains("increase-btn")) {
             increaseQuantity(id)

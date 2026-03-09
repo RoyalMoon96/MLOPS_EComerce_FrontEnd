@@ -1,5 +1,5 @@
 export const config = {
-  useMockData: import.meta.env.VITE_USE_MOCK === "true" || true,
+  useMockData: import.meta.env.VITE_USE_MOCK === "true",
 
   api: import.meta.env.VITE_API_URL || "https://api.example.com",
 
