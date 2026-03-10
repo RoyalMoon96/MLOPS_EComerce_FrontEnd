@@ -3,16 +3,57 @@ html, body {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: #F9FAFB;
-
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 0;
 }
 
 #app {
   flex: 1;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1e4ed8;
+}
+
+.page-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1e4ed8;
 }
 
 .page-container {
@@ -87,6 +128,192 @@ button:hover {
     opacity: 1;
     transform: translateY(0);
 
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.status-processing {
+  background: #f59e0b;
+}
+
+.status-confirmed {
+  background: #3b82f6;
+}
+
+.status-shipped {
+  background: #8b5cf6;
+}
+
+.status-delivered {
+  background: #10b981;
+}
+
+.status-cancelled {
+  background: #ef4444;
+}
+
+.order-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.15s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.order-card button {
+  margin-top: 8px;
+}
+
+.order-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+  position: relative;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 17px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.timeline-progress {
+  position: absolute;
+  top: 17px;
+  left: 0;
+  height: 3px;
+  background: #10b981;
+  z-index: 1;
+  transition: width 0.6s ease;
+}
+
+.timeline-step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: white;
+  margin: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+
+  transition: all 0.3s ease;
+}
+
+.timeline-circle.completed {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.timeline-label {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+
+@media (max-width: 600px) {
+
+  #app {
+    padding: 20px 14px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .order-timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .timeline-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .timeline-label {
+    margin: 0;
+  }
+
+}
+
+.order-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: #f3f4f6;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #1f2937;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+  transform: scale(1.05);
 }
 
 .status-badge {

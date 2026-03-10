@@ -62,9 +62,46 @@ function progressOrderStatus(order) {
 
 }
 
+const statusFlow = [
+  "PROCESSING",
+  "CONFIRMED",
+  "SHIPPED",
+  "DELIVERED"
+]
+
+function progressOrderStatus(order) {
+
+  const currentIndex = statusFlow.indexOf(order.status)
+
+  if (currentIndex < statusFlow.length - 1) {
+    order.status = statusFlow[currentIndex + 1]
+  }
+
+}
+
 export async function createOrder(data) {
 
   if (config.useMockData) {
+
+    const formattedItems = data.items.map(item => ({
+      productId: item.productId,
+      name: item.name,
+      quantity: item.quantitySold,
+      price: item.unitPrice,
+      subtotal: item.subtotal
+    }))
+
+    const newOrder = {
+      id: Date.now(),
+      date: new Date().toISOString().split("T")[0],
+      status: "CONFIRMED",
+      total: data.totalAmount,
+      items: formattedItems
+    }
+
+    ordersMock.unshift(newOrder)
+
+    return newOrder
 
     const formattedItems = data.items.map(item => ({
       productId: item.productId,
