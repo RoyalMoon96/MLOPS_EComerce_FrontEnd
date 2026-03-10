@@ -30,7 +30,7 @@ export async function cartPage(app) {
 
     app.onclick = (event) => {
 
-        const id = Number(event.target.dataset.id)
+        const id = event.target.dataset.id
 
         if (event.target.classList.contains("increase-btn")) {
             increaseQuantity(id)
@@ -286,15 +286,11 @@ export async function cartPage(app) {
 
             const orderItems = cartWithProducts.map(item => ({
                 productId: item.id,
-                name: item.name,
-                quantitySold: item.quantity,
-                unitPrice: item.price,
-                subtotal: item.price * item.quantity
+                quantity: item.quantity,
             }))
 
             const orderData = {
-                items: orderItems,
-                totalAmount: total
+                items: orderItems
             }
 
             try {
