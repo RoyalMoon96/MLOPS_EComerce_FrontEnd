@@ -37,54 +37,48 @@ export async function orderDetailPage(app, id) {
 
       const order = await getOrderById(id)
 
-      container.innerHTML = `
-        <div class="order-card">
+    container.innerHTML = `
+    <div class="order-card">
 
-          <p><strong>Date:</strong> ${order.date}</p>
+        <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
 
-          <p>
-            <strong>Status:</strong>
-            <span class="status-badge status-${order.status.toLowerCase()}">
-              ${order.status}
-            </span>
-          </p>
+        <p>
+        <strong>Status:</strong>
+        <span class="status-badge status-${order.status.toLowerCase()}">
+            ${order.status}
+        </span>
+        </p>
 
-          <p><strong>Total:</strong> $${order.total}</p>
+        <p><strong>Total:</strong> $${order.total}</p>
 
-          <h3>Order Progress</h3>
+        <h3>Order Progress</h3>
+        ${orderTimeline(order.status)}
 
-          ${orderTimeline(order.status)}
+        <h3>Items</h3>
+        <table class="table">
+        <thead>
+            <tr>
+            <th>Product ID</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${order.items?.map(item => `
+            <tr>
+                <td>${item.productId}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price}</td>
+                <td>$${item.price * item.quantity}</td>
+            </tr>
+            `).join("") || ""}
+        </tbody>
+        </table>
 
-          <h3>Items</h3>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              ${order.items?.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>$${item.price}</td>
-                  <td>$${item.subtotal}</td>
-                </tr>
-              `).join("") || ""}
-
-            </tbody>
-
-          </table>
-
-        </div>
-      `
-
+    </div>
+    `
+    
     } catch (error) {
 
       console.error(error)
