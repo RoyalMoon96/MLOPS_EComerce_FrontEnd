@@ -1,112 +1,108 @@
 import { getOrderById } from "../../services/api.js"
 import { orderTimeline } from "../../components/orderTimeline.js"
+import { loader } from "../../components/loader.js"
+import { errorMessage } from "../../components/errorMessage.js"
+import { showToast } from "../../components/toast.js"
 
 export async function orderDetailPage(app, id) {
 
     app.innerHTML = `
-    <div class="order-header-bar">
-
+    <div class="page-container">
+        <div class="order-header-bar">
+        <h2 class="order-title">Order #${id}</h2>
         <div class="order-actions">
-
-        <button id="back-btn" class="icon-btn">
-            ←
-        </button>
-
-        <button id="refresh-order" class="icon-btn">
-            ⟳
-        </button>
-
+            <button id="back-btn" class="icon-btn">←</button>
+            <button id="refresh-order" class="icon-btn">⟳</button>
         </div>
-
-        <h2>Order #${id}</h2>
-
+        </div>
+        <div id="order-detail"></div>
     </div>
-
-    <div id="order-detail">Loading order...</div>
     `
 
-    document.getElementById("back-btn").onclick = () => {
-        window.location.hash = "#orders"
-    }
-    
-    document.getElementById("refresh-order").addEventListener("click", loadOrder)
+  const container = document.getElementById("order-detail")
 
+  document.getElementById("back-btn").onclick = () => {
+    window.location.hash = "#orders"
+  }
 
-    const container = document.getElementById("order-detail")
+  document
+    .getElementById("refresh-order")
+    .addEventListener("click", loadOrder)
 
-    async function loadOrder() {
+  async function loadOrder() {
 
-    container.innerHTML = "Loading..."
+    container.innerHTML = loader()
 
     try {
 
-        const order = await getOrderById(id)
+      const order = await getOrderById(id)
 
-        container.innerHTML = `
+      container.innerHTML = `
         <div class="order-card">
 
-            <p><strong>Date:</strong> ${order.date}</p>
+          <p><strong>Date:</strong> ${order.date}</p>
 
-            <p>
+          <p>
             <strong>Status:</strong>
             <span class="status-badge status-${order.status.toLowerCase()}">
-                ${order.status}
+              ${order.status}
             </span>
-            </p>
+          </p>
 
-            <p><strong>Total:</strong> $${order.total}</p>
+          <p><strong>Total:</strong> $${order.total}</p>
 
-            <h3>Order Progress</h3>
+          <h3>Order Progress</h3>
 
-            ${orderTimeline(order.status)}
+          ${orderTimeline(order.status)}
 
-            <h3>Items</h3>
+          <h3>Items</h3>
 
-            <table class="table">
+          <table class="table">
             <thead>
-                <tr>
+              <tr>
                 <th>Product</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Subtotal</th>
-                </tr>
+              </tr>
             </thead>
 
             <tbody>
 
-            ${order.items.map(item => `
+              ${order.items?.map(item => `
                 <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>$${item.price}</td>
-                <td>$${item.subtotal}</td>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>$${item.price}</td>
+                  <td>$${item.subtotal}</td>
                 </tr>
-            `).join("")}
+              `).join("") || ""}
 
             </tbody>
 
-            </table>
+          </table>
+
         </div>
-        `
+      `
+
     } catch (error) {
 
-      container.innerHTML = `
-        <p>Error loading order</p>
-      `
+      console.error(error)
+
+      container.innerHTML = errorMessage("Failed to load order details")
+
+      showToast("Error loading order", "danger")
 
     }
 
   }
 
   await loadOrder()
+
   const interval = setInterval(loadOrder, 5000)
 
   window.addEventListener("hashchange", () => {
-  clearInterval(interval)
+    clearInterval(interval)
   })
-
-  document
-    .getElementById("refresh-order")
-    .addEventListener("click", loadOrder)
 
 }

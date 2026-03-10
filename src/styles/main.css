@@ -3,16 +3,23 @@ html, body {
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f5f7fb;
-  margin: 0;
-  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #F9FAFB;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 #app {
+  flex: 1;
+}
+
+.page-container {
   max-width: 1000px;
-  margin: auto;
+  margin: 0 auto;
   padding: 30px 20px;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -196,10 +203,12 @@ button:hover {
   font-size: 12px;
 }
 
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
+.order-actions button:first-child {
+  margin-right: auto;
+}
+
+.order-actions button:last-child {
+  margin-left: auto;
 }
 
 
@@ -234,14 +243,15 @@ button:hover {
 
 .order-header-bar {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
   margin-bottom: 20px;
+  gap: 8px;
 }
 
 .order-actions {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .icon-btn {
@@ -266,4 +276,10 @@ button:hover {
   color: white;
   border-color: #2563eb;
   transform: scale(1.05);
+}
+
+.order-products-preview {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 5px 0;
 }

@@ -1,5 +1,6 @@
 import { config } from "../config/config.js"
 import { productsMock } from "../mock/products.js"
+import { ordersMock } from "../mock/orders.js"
 
 async function fetchData(path) {
 
@@ -105,47 +106,6 @@ export async function createOrder(data) {
 }
 
 // GET ORDERS
-
-let ordersMock = [
-  {
-    id: 1001,
-    date: "2026-03-01",
-    total: 105,
-    status: "DELIVERED",
-    items: [
-      {
-        productId: 1,
-        name: "Mechanical Keyboard",
-        quantity: 1,
-        price: 80,
-        subtotal: 80
-      },
-      {
-        productId: 2,
-        name: "Wireless Mouse",
-        quantity: 1,
-        price: 25,
-        subtotal: 25
-      }
-    ]
-  },
-  {
-    id: 1002,
-    date: "2026-03-02",
-    total: 200,
-    status: "SHIPPED",
-    items: [
-      {
-        productId: 3,
-        name: "Running Shoes",
-        quantity: 2,
-        price: 100,
-        subtotal: 200
-      }
-    ]
-  }
-]
-
 export async function getOrders() {
 
   if (config.useMockData) {
