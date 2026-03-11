@@ -28,8 +28,8 @@ export async function getProductById(id) {
   if (config.useMockData) {
     return productsMock.find(p => p.id == id)
   }
-  const data = fetchData(`${config.routes.products}/${id}`)
-  return data.items
+  const data = fetchData(`${config.routes.products}/${id}/stock`)
+  return data
 }
 
 
@@ -109,6 +109,6 @@ export async function getOrderById(id) {
     }
     return order
   }
-  const data = await fetchData(`${config.routes.orders}/${id}`)
-  return data.items
+  const data = await fetchData(`${config.routes.orders}/${id}/status`)
+  return data
 }
